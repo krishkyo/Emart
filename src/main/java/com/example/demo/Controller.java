@@ -33,6 +33,11 @@ public class Controller {
 	UserTempRepo URepo; 
 	@Autowired
 	CacheRepo CRepo;
+	@Autowired
+	CartTempRepo CTRepo;
+	@Autowired
+	CartRepo CARTRepo;
+	
 	
 	private Path path;
 	@GetMapping("/")
@@ -62,34 +67,18 @@ public class Controller {
 	
 	@GetMapping("/admin")
 	public String admin(Model model) {
-		if(LRepo.findById("1").get().getStatus().equals("yes")) {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-			model.addAttribute("name", ERepo.findById(CRepo.findById("1").get().getIdnum()).get().getName());	
-		}else {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-		}
+		
 		return "admin";
 	}
 	
 	@GetMapping("/adminProducts")
 	public String aView(Model model) {
 		model.addAttribute("item", PLRepo.findAll());
-		if(LRepo.findById("1").get().getStatus().equals("yes")) {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-			model.addAttribute("name", ERepo.findById(CRepo.findById("1").get().getIdnum()).get().getName());	
-		}else {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-		}
+		
 		return "adminProduct";
 	}
 	@GetMapping("/addProduct")
 	public String addProduct(Model model) {
-		if(LRepo.findById("1").get().getStatus().equals("yes")) {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-			model.addAttribute("name", ERepo.findById(CRepo.findById("1").get().getIdnum()).get().getName());	
-		}else {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-		}
 		return "addproduct";
 	}
 	
@@ -102,12 +91,6 @@ public class Controller {
 		a.setNum(""+(n+1));
 		PTRepo.save(a);
 		PLRepo.save(product);
-		if(LRepo.findById("1").get().getStatus().equals("yes")) {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-			model.addAttribute("name", ERepo.findById(CRepo.findById("1").get().getIdnum()).get().getName());	
-		}else {
-			model.addAttribute("status",LRepo.findById("1").get().getStatus());
-		}
 		return "addImage";
 	}
 	
@@ -158,11 +141,21 @@ public class Controller {
 	}
 	
 	@GetMapping("/buy/{id}")
-	public String buy(@PathVariable String id,Model model) {
+	public String buy(@PathVariable String id,Model model,@RequestParam String quantity ) {
 		if(LRepo.findById("1").get().getStatus().equals("yes")) {
 			model.addAttribute("id", id);
 			model.addAttribute("status", LRepo.findById("1").get().getStatus());
-			return "buy";			
+			Cart c=new Cart();
+			var temp=CTRepo.findById("1").get();
+			c.setId(temp.getNum());
+			c.setQuantity(quantity);
+			c.setName(PLRepo.findById(id).get().getName());
+			c.setTotal(""+(Integer.parseInt(quantity)*Integer.parseInt(PLRepo.findById(id).get().getPrice())));
+			c.setIdnum(CRepo.findById("1").get().getIdnum());
+			CARTRepo.save(c);
+			temp.setNum((Integer.parseInt(temp.getNum())+1)+"");
+			CTRepo.save(temp);
+			return "redirect:/products";			
 		}else {
 			model.addAttribute("status", LRepo.findById("1").get().getStatus());
 			return "redirect:/login";
@@ -247,5 +240,25 @@ public class Controller {
 		temp.setIdnum("");
 		CRepo.save(temp);
 		return "redirect:/";
+	}
+	
+	@GetMapping("/orders")
+	public String order(Model model) {
+		if(LRepo.findById("1").get().getStatus().equals("yes")) {
+			model.addAttribute("item", CARTRepo.findByIdnum(CRepo.findById("1").get().getIdnum()));
+			model.addAttribute("status",LRepo.findById("1").get().getStatus());
+			model.addAttribute("name", ERepo.findById(CRepo.findById("1").get().getIdnum()).get().getName());
+			return "cart";
+		}else {
+			return "redirect:/login";
+		}
+	}
+	@GetMapping("/resultcart")
+	public String resultcar() {
+		for(Cart c:CARTRepo.findByIdnum(CRepo.findById("1").get().getIdnum())) {
+			CARTRepo.deleteById(c.getId());
+		}
+		System.out.println(CRepo.findById("1").get().getIdnum());
+		return "resultcart";
 	}
 }

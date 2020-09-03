@@ -45,7 +45,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/products"><i class="fa fa-archive"></i> Products</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item active">
           <a class="nav-link" href="/orders"><i class="fa fa-shopping-cart"></i> Your Cart</a>
         </li>
         
@@ -71,36 +71,10 @@
 	<br>
   <div class="container marketing">
 	<div class="page-header">
-	<h1>Product Information</h1>
-	</div>
-	<div class="row">
-		<div class="col-md-5">
-			<img style="width:100%;height:80%" th:src="@{'/images/'+${item.id}+'.jpg'}">
-		</div>
-		<div class="col-md-5">
-		<h2>Product Name</h2>
-		<p th:text="${item.name}"></p>
-		<h2>Category</h2>
-		<p th:text="${item.category}"></p>
-		<h2>Price</h2>
-		<p th:text="${item.price}"></p>
-		<h2>Description</h2>
-		<p th:text="${item.description}"></p>
-		<hr>
-<form th:action="@{'/buy/'+${item.id}}" modelAttribute="confirm">
-  <div class="form-group">
-    <label for="exampleFormControlFile1">Enter Quantity</label>
-    <input type="number" name="quantity" min="1" value="1" class="form-control-file" id="exampleFormControlFile1">
-  </div>
-  <button type="submit" class="btn btn-success"><i class="fa fa-cart-arrow-down"></i> Add to cart</button>
-</form>
-<br>
-		<a class="btn btn-danger" href="/products"><i class="fa fa-times"></i> Cancel</a>
-		
-		</div>
-	</div>
-
-
+	<h1>Order Confirmed</h1>
+	<p>Packages will be delivered within 5 working days!</p>
+	</div> 
+	<a class="btn btn-primary" href="/products">Buy more</a>
 
 
    
