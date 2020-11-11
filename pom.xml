@@ -13,7 +13,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>eMusicStore</name>
 	<description>Demo project for Spring Boot</description>
-
+<!--  lookup parent from repository  -->
 	<properties>
 		<java.version>11</java.version>
 	</properties>
